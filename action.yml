@@ -1,0 +1,32 @@
+name: 'Run Swift Tests'
+description: 'Run swift test on the repository'
+
+inputs:
+  enable-code-coverage:
+    description: 'Boolean input to enable code coverage'
+    required: false
+    default: true
+
+runs:
+  using: 'composite'
+  run-tests:
+    #strategy:
+    #  matrix:
+    #    image:
+    #      - 'swift:5.9'
+    #      - 'swift:5.10'
+    #container:
+    #  image: ${{ matrix.image }}
+    steps:  
+    - name: Run tests
+      shell: bash
+      run: |
+        if [ "${{ inputs.enable-code-coverage }}" = "true" ]; then
+          swift test --parallel --enable-code-coverage
+        else
+          swift test --parallel
+        fi
+
+branding:
+  icon: 'server'
+  color: 'green'
