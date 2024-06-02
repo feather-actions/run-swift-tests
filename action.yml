@@ -1,0 +1,43 @@
+name: 'Run Swift Tests'
+description: 'Run swift test on the repository'
+
+inputs:
+  code-coverage:
+    description: 'Boolean input to enable code coverage'
+    required: false
+    default: false
+  use-testify:
+    description: 'Generates an MD file from the test results and show it in the workflow summary'
+    required: false
+    default: false
+
+runs:
+  using: 'composite'
+  steps:
+  - name: Run tests
+    shell: bash
+    run: |
+      if [ "${{inputs.use-testify}}" == "true" ]; then
+        echo "testify"
+        git clone https://github.com/BinaryBirds/Testify.git
+        cd Testify
+        make install
+        cd ..
+      fi
+      
+      if [ "${{inputs.code-coverage}}" == "true" ] && [ "${{inputs.use-testify}}" == "true" ]; then
+        swift test --enable-code-coverage | testify md >> $GITHUB_STEP_SUMMARY
+
+      elif [ "${{inputs.use-testify}}" == "true" ]; then
+        swift test | testify md >> $GITHUB_STEP_SUMMARY
+
+      elif [ "${{inputs.code-coverage}}" == "true" ]; then
+        swift test --parallel --enable-code-coverage
+
+      else
+        swift test --parallel
+      fi
+
+branding:
+  icon: 'server'
+  color: 'green'
