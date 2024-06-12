@@ -17,6 +17,9 @@ runs:
   - name: Run tests
     shell: bash
     run: |
+      if [[ "$OSTYPE" == "linux-gnu"* ]]; then  # if OS is linux
+          git config --global --add safe.directory $PWD
+        fi
       if [ "${{inputs.use-testify}}" == "true" ]; then
         echo "testify"
         git clone https://github.com/BinaryBirds/Testify.git
